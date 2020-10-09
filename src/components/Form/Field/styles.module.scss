@@ -1,0 +1,61 @@
+.field {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+
+  @media (max-width: 865px) {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 40px;
+
+  @media (max-width: 558px) {
+    flex-direction: column;
+  }
+}
+
+.content-item {
+  width: 300px;
+  min-width: 200px;
+  margin-right: 30px;
+  margin-bottom: 40px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  @media (max-width: 865px) {
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 558px) {
+    margin-right: 0;
+  }
+}
+
+.buttons {
+  display: flex;
+  margin-bottom: 40px;
+}
+
+.button {
+  margin-right: 30px;
+  cursor: pointer;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.error {
+  position: absolute;
+  bottom: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  color: #910202;
+}
