@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
+import { getRandomNumber, cloneArray } from '@common/utils';
 import FormTemplate from './FormTemplate';
 import { TFields, TFieldType, TFieldValue, IField, TArraysResult, TObjectsResult } from './types';
 
 const Form = () => {
   const selectOptions: TFieldType[] = ['email', 'phone', 'link'];
-  const getRandomNumber = () => Math.floor(Math.random() * 100000);
 
-  const [fields, setFields] = useState<TFields>([{ type: '', value: '', error: null, id: getRandomNumber() }]);
-  const [arraysResult, setArraysResult] = useState<TArraysResult>(null);
-  const [objectsResult, setObjectsResult] = useState<TObjectsResult>(null);
-
-  function getFieldId(): number {
+  const getFieldId = (fieldsArray: TFields): number => {
     const newId = getRandomNumber();
 
-    const isNotUniqueId = fields.some(item => item.id === newId);
+    const isNotUniqueId = fieldsArray.some(item => item.id === newId);
 
-    return isNotUniqueId ? getFieldId() : newId;
-  }
+    return isNotUniqueId ? getFieldId(fieldsArray) : newId;
+  };
+
+  const createNewField = (fieldsArray: TFields): IField => ({
+    type: '',
+    value: '',
+    error: null,
+    id: getFieldId(fieldsArray),
+  });
+
+  const [fields, setFields] = useState<TFields>([createNewField([])]);
+  const [arraysResult, setArraysResult] = useState<TArraysResult>(null);
+  const [objectsResult, setObjectsResult] = useState<TObjectsResult>(null);
 
   const checkToEmptyFields = (): boolean => {
     const isUnfilledFields = fields.some(item => !item.type || !item.value);
@@ -39,7 +46,7 @@ const Form = () => {
   };
 
   const handleChangeFieldType = (fieldId: number, type: TFieldType): void => {
-    const newFields = [...fields];
+    const newFields = cloneArray(fields);
 
     const currentField = newFields.find(item => item.id === fieldId);
     if (currentField) {
@@ -51,7 +58,7 @@ const Form = () => {
   };
 
   const handleChangeFieldValue = (fieldId: number, value: TFieldValue): void => {
-    const newFields = [...fields];
+    const newFields = cloneArray(fields);
 
     const currentField = newFields.find(item => item.id === fieldId);
     if (currentField) {
@@ -64,21 +71,25 @@ const Form = () => {
 
   const handleAddField = (): void => {
     if (!checkToEmptyFields()) {
-      const id = getFieldId();
-      const newField: IField = { type: '', value: '', error: null, id };
-      const newFields = [...fields, newField];
+      const newFields = [...cloneArray(fields), createNewField(fields)];
       setFields(newFields);
     }
   };
 
   const handleRemoveField = (fieldId: number): void => {
+    const newFields = cloneArray(fields);
     if (fields.length > 1) {
-      const newFields = [...fields];
       const fieldIndex = newFields.findIndex(item => item.id === fieldId);
       newFields.splice(fieldIndex, 1);
+    } else if (fields.length === 1) {
+      const lastField = newFields[0];
 
-      setFields(newFields);
+      lastField.type = '';
+      lastField.value = '';
+      lastField.error = null;
     }
+
+    setFields(newFields);
   };
 
   const getFormValues = () => {
