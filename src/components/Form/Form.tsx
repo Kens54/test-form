@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getRandomNumber } from '@common/utils';
+import { getRandomNumber, cloneArray } from '@common/utils';
 import FormTemplate from './FormTemplate';
 import { TFields, TFieldType, TFieldValue, IField, TArraysResult, TObjectsResult } from './types';
 
@@ -46,7 +46,7 @@ const Form = () => {
   };
 
   const handleChangeFieldType = (fieldId: number, type: TFieldType): void => {
-    const newFields = [...fields];
+    const newFields = cloneArray(fields);
 
     const currentField = newFields.find(item => item.id === fieldId);
     if (currentField) {
@@ -58,7 +58,7 @@ const Form = () => {
   };
 
   const handleChangeFieldValue = (fieldId: number, value: TFieldValue): void => {
-    const newFields = [...fields];
+    const newFields = cloneArray(fields);
 
     const currentField = newFields.find(item => item.id === fieldId);
     if (currentField) {
@@ -71,19 +71,25 @@ const Form = () => {
 
   const handleAddField = (): void => {
     if (!checkToEmptyFields()) {
-      const newFields = [...fields, createNewField(fields)];
+      const newFields = [...cloneArray(fields), createNewField(fields)];
       setFields(newFields);
     }
   };
 
   const handleRemoveField = (fieldId: number): void => {
+    const newFields = cloneArray(fields);
     if (fields.length > 1) {
-      const newFields = [...fields];
       const fieldIndex = newFields.findIndex(item => item.id === fieldId);
       newFields.splice(fieldIndex, 1);
+    } else if (fields.length === 1) {
+      const lastField = newFields[0];
 
-      setFields(newFields);
+      lastField.type = '';
+      lastField.value = '';
+      lastField.error = null;
     }
+
+    setFields(newFields);
   };
 
   const getFormValues = () => {
